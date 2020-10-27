@@ -1,0 +1,60 @@
+"A date string with format `Y-m-d`, e.g. `2011-05-23`."
+scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
+
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar DateTime
+    @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+type Query {
+    categories: [ProductCategory] @all
+    category(id: ID @eq): ProductCategory @find
+
+    products: [Product] @all
+    Product(id: ID @eq): Product @find
+}
+
+type Mutation {
+    createCategory(Name: String! @rules(apply: ["required"])): ProductCategory!
+        @create
+
+    updateCategory(
+        id: ID @rules(apply: ["required"])
+        Name: String @rules(apply: ["required"])
+    ): ProductCategory @update
+
+    deleteCategory(id: ID! @rules(apply: ["required"])): ProductCategory @delete
+
+    createProduct(
+        Name: String! @rules(apply: ["required"])
+        Description: String @rules(apply: ["required"])
+        Price: Int! @rules(apply: ["required"])
+        Status: Boolean! @rules(apply: ["required"])
+        category_id: Int! @rules(apply: ["required"])
+    ): Product @create
+
+    updateProduct(
+        id: ID! @rules(apply: ["required"])
+        Name: String! @rules(apply: ["required"])
+        Description: String @rules(apply: ["required"])
+        Price: Int! @rules(apply: ["required"])
+        Status: Boolean! @rules(apply: ["required"])
+        category_id: Int! @rules(apply: ["required"])
+    ): Product @update
+
+    deleteProduct(id: ID! @rules(apply: ["required"])): Product @delete
+}
+
+type ProductCategory {
+    id: ID!
+    Name: String!
+    products: [Product] @hasMany
+}
+
+type Product {
+    id: ID!
+    Name: String!
+    Description: String!
+    Price: Int!
+    Status: Boolean
+    category: ProductCategory! @belongsTo
+}
